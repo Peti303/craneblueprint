@@ -1,0 +1,2512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crane Blueprint | Premium Engineering Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #fafbfc;
+            --secondary-bg: #f0f4f8;
+            --accent-blue: #0284c7;
+            --accent-teal: #0d9488;
+            --accent-cyan: #0891b2;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-light: #94a3b8;
+            --grid-color: rgba(14, 165, 233, 0.08);
+            --particle-color: #0ea5e9;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Canvas Container */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #canvas-container canvas {
+            pointer-events: auto;
+        }
+
+        /* Blueprint Grid Background */
+        .blueprint-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .blueprint-grid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 200px 200px;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1.5rem 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        header.scrolled {
+            padding: 0.75rem 2rem;
+        }
+
+        header.scrolled .header-inner {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            box-shadow: 
+                0 4px 30px rgba(0, 0, 0, 0.05),
+                0 1px 3px rgba(0, 0, 0, 0.03);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: '';
+            width: 2px;
+            height: 18px;
+            background: white;
+            position: absolute;
+            bottom: 6px;
+        }
+
+        .logo-icon::after {
+            content: '';
+            width: 16px;
+            height: 2px;
+            background: white;
+            position: absolute;
+            top: 8px;
+        }
+
+        nav {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            color: white !important;
+            padding: 0.6rem 1.5rem;
+            border-radius: 100px;
+            font-weight: 500;
+        }
+
+        .nav-cta::after {
+            display: none;
+        }
+
+        .nav-cta:hover {
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+        }
+
+        /* Content Wrapper */
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 4rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 600px;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--accent-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(14, 165, 233, 0.2);
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.35);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--text-light);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .hero-3d-space {
+            flex: 1;
+            min-height: 500px;
+            pointer-events: none;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 3rem;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Transition Section */
+        .transition-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .transition-content {
+            flex: 1;
+            max-width: 550px;
+            margin-left: auto;
+            z-index: 10;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+        }
+
+        .transition-section h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .transition-section p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .feature-icon::before {
+            content: '✓';
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .feature-item span {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Zoom Section */
+        .zoom-section {
+            min-height: 200vh;
+            position: relative;
+        }
+
+        /* Particle Background Section */
+        .particle-section {
+            position: relative;
+            z-index: 5;
+            padding: 8rem 0;
+        }
+
+        .particle-section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 
+                0 4px 30px rgba(0, 0, 0, 0.05),
+                0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Features Grid */
+        .features-section {
+            padding: 6rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(14, 165, 233, 0.15);
+            border-color: rgba(14, 165, 233, 0.3);
+        }
+
+        .feature-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(20, 184, 166, 0.1));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* Specifications Section */
+        .specs-section {
+            padding: 6rem 0;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .spec-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .spec-card:hover {
+            border-color: rgba(14, 165, 233, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .spec-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .spec-unit {
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .spec-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Testimonials */
+        .testimonials-section {
+            padding: 6rem 0;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 2.5rem;
+        }
+
+        .testimonial-content {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .author-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .author-info p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 8rem 0;
+        }
+
+        .cta-card {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            border-radius: 32px;
+            padding: 5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+            animation: shimmer 10s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cta-card h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-card p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--accent-blue);
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-outline-white {
+            background: transparent;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-outline-white:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 4rem 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .footer-links h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .footer-links ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom p {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .social-link:hover {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .hero {
+                flex-direction: column;
+                padding: 6rem 2rem 2rem;
+                text-align: center;
+            }
+
+            .hero-content {
+                max-width: 100%;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .stats-bar {
+                justify-content: center;
+            }
+
+            .hero-3d-space {
+                min-height: 350px;
+            }
+
+            .transition-section {
+                flex-direction: column;
+                padding: 4rem 2rem;
+            }
+
+            .transition-content {
+                margin: 0;
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .feature-list {
+                align-items: center;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.25rem;
+            }
+
+            .stats-bar {
+                flex-wrap: wrap;
+                gap: 1.5rem;
+            }
+
+            .glass-card {
+                padding: 2rem;
+            }
+
+            .cta-card {
+                padding: 3rem 2rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .features-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll Progress Indicator */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+            z-index: 1001;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-bg);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            position: relative;
+        }
+
+        .loader::before,
+        .loader::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--accent-blue);
+            animation: spin 1s linear infinite;
+        }
+
+        .loader::before {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .loader::after {
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border-top-color: var(--accent-teal);
+            animation-direction: reverse;
+        }
+
+        .loading-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <span class="loading-text">Loading Blueprint...</span>
+    </div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Blueprint Grid Background -->
+    <div class="blueprint-grid"></div>
+
+    <!-- Three.js Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="header-inner">
+            <a href="#" class="logo">
+                <div class="logo-icon"></div>
+                Crane Blueprint
+            </a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#specs">Specifications</a>
+                <a href="#testimonials">Testimonials</a>
+                <a href="#contact">Contact</a>
+                <a href="#" class="nav-cta">Get Started</a>
+            </nav>
+            <button class="mobile-menu-btn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <div class="hero-content">
+                <div class="hero-badge">Next Generation Engineering</div>
+                <h1>
+                    Precision <span class="gradient-text">Crane</span><br>
+                    Blueprint Technology
+                </h1>
+                <p>
+                    Revolutionary 3D modeling and simulation platform for modern construction. 
+                    Design, visualize, and optimize crane operations with unprecedented accuracy.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn-primary">
+                        Start Project
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="btn-secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                        </svg>
+                        Watch Demo
+                    </a>
+                </div>
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Projects Completed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">99.9%</span>
+                        <span class="stat-label">Accuracy Rate</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Expert Support</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-3d-space"></div>
+        </section>
+
+        <!-- Transition Section -->
+        <section class="transition-section" id="about">
+            <div class="transition-content">
+                <span class="section-label">// About the Platform</span>
+                <h2>Engineering Excellence Through Digital Innovation</h2>
+                <p>
+                    Our platform combines cutting-edge 3D visualization with precision engineering tools, 
+                    enabling construction teams to plan and execute complex crane operations with 
+                    unprecedented clarity and safety.
+                </p>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Real-time 3D simulation and visualization</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Advanced physics-based load calculations</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Collaborative project management tools</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Comprehensive safety analysis reports</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Zoom Through Section -->
+        <section class="zoom-section" id="zoom"></section>
+
+        <!-- Particle Background Sections -->
+        <div class="particle-section">
+            <div class="particle-section-inner">
+                <!-- Features Section -->
+                <section class="features-section" id="features">
+                    <div class="section-header">
+                        <span class="section-label">// Core Features</span>
+                        <h2>Built for Modern Construction</h2>
+                        <p>
+                            Comprehensive tools designed to streamline every aspect of crane planning and operation.
+                        </p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-card-icon">📐</div>
+                            <h3>Precision Modeling</h3>
+                            <p>Create detailed 3D crane models with millimeter accuracy using our intuitive blueprint tools and parametric design system.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon">🔄</div>
+                            <h3>Real-time Simulation</h3>
+                            <p>Test crane operations in a physics-accurate virtual environment before deployment, reducing risk and optimizing efficiency.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon">📊</div>
+                            <h3>Load Analysis</h3>
+                            <p>Advanced algorithms calculate load distributions, stress points, and safety margins with industry-leading precision.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon">🌐</div>
+                            <h3>Cloud Collaboration</h3>
+                            <p>Share projects across teams in real-time, with version control and seamless integration with existing workflows.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon">🛡️</div>
+                            <h3>Safety Compliance</h3>
+                            <p>Built-in compliance checking against international safety standards with automated reporting and documentation.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon">📱</div>
+                            <h3>Mobile Access</h3>
+                            <p>Access your blueprints and simulations from any device, with full functionality on tablets for on-site reviews.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Specifications Section -->
+                <section class="specs-section" id="specs">
+                    <div class="section-header">
+                        <span class="section-label">// Technical Specifications</span>
+                        <h2>Engineering by the Numbers</h2>
+                        <p>
+                            Industry-leading performance metrics that set us apart from traditional solutions.
+                        </p>
+                    </div>
+                    <div class="specs-grid">
+                        <div class="spec-card">
+                            <div class="spec-value">0.1<span class="spec-unit">mm</span></div>
+                            <div class="spec-label">Modeling Precision</div>
+                        </div>
+                        <div class="spec-card">
+                            <div class="spec-value">60<span class="spec-unit">fps</span></div>
+                            <div class="spec-label">Simulation Rate</div>
+                        </div>
+                        <div class="spec-card">
+                            <div class="spec-value">1M+</div>
+                            <div class="spec-label">Particles Rendered</div>
+                        </div>
+                        <div class="spec-card">
+                            <div class="spec-value">50+</div>
+                            <div class="spec-label">Crane Models</div>
+                        </div>
+                        <div class="spec-card">
+                            <div class="spec-value">100<span class="spec-unit">TB</span></div>
+                            <div class="spec-label">Cloud Storage</div>
+                        </div>
+                        <div class="spec-card">
+                            <div class="spec-value">15<span class="spec-unit">ms</span></div>
+                            <div class="spec-label">Response Time</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Testimonials Section -->
+                <section class="testimonials-section" id="testimonials">
+                    <div class="section-header">
+                        <span class="section-label">// Client Testimonials</span>
+                        <h2>Trusted by Industry Leaders</h2>
+                        <p>
+                            See what construction professionals are saying about Crane Blueprint.
+                        </p>
+                    </div>
+                    <div class="testimonials-grid">
+                        <div class="testimonial-card">
+                            <p class="testimonial-content">
+                                "Crane Blueprint has revolutionized how we approach complex lifts. The precision and visualization capabilities have reduced our planning time by 60%."
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">JM</div>
+                                <div class="author-info">
+                                    <h4>James Mitchell</h4>
+                                    <p>Senior Project Manager, BuildCorp</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="testimonial-card">
+                            <p class="testimonial-content">
+                                "The safety analysis features alone have saved us countless hours and significantly improved our safety record. An essential tool for modern construction."
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">SR</div>
+                                <div class="author-info">
+                                    <h4>Sarah Rodriguez</h4>
+                                    <p>Safety Director, Apex Construction</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="testimonial-card">
+                            <p class="testimonial-content">
+                                "The real-time collaboration features have transformed how our distributed teams work together. Everyone stays in sync, no matter where they are."
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">DK</div>
+                                <div class="author-info">
+                                    <h4>David Kim</h4>
+                                    <p>Operations Lead, Global Crane Services</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <section class="cta-section" id="contact">
+                    <div class="cta-card">
+                        <h2>Ready to Transform Your Projects?</h2>
+                        <p>
+                            Join hundreds of construction teams already using Crane Blueprint to deliver safer, more efficient operations.
+                        </p>
+                        <div class="cta-buttons">
+                            <a href="#" class="btn-white">
+                                Start Free Trial
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="btn-outline-white">
+                                Schedule Demo
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-inner">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="#" class="logo">
+                            <div class="logo-icon"></div>
+                            Crane Blueprint
+                        </a>
+                        <p>
+                            Precision engineering visualization for the modern construction industry. 
+                            Design, simulate, and build with confidence.
+                        </p>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="#">Features</a></li>
+                            <li><a href="#">Pricing</a></li>
+                            <li><a href="#">Case Studies</a></li>
+                            <li><a href="#">Documentation</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Press</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">API Reference</a></li>
+                            <li><a href="#">Status</a></li>
+                            <li><a href="#">Community</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>© 2024 Crane Blueprint. All rights reserved.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+                        <a href="#" class="social-link" aria-label="GitHub">⌘</a>
+                        <a href="#" class="social-link" aria-label="YouTube">▶</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // ============================================
+        // CRANE BLUEPRINT - MAIN APPLICATION
+        // ============================================
+
+        class CraneBlueprintApp {
+            constructor() {
+                this.container = document.getElementById('canvas-container');
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.craneGroup = null;
+                this.craneParticles = null;
+                this.backgroundParticles = null;
+                this.clock = new THREE.Clock();
+                
+                // Scroll state
+                this.scrollY = 0;
+                this.targetScrollY = 0;
+                
+                // Mouse state
+                this.mouse = new THREE.Vector2(9999, 9999);
+                this.mouseWorld = new THREE.Vector3();
+                
+                // Animation state
+                this.craneRotation = Math.PI;
+                this.craneRotationTarget = Math.PI;
+                this.craneRotationCurrent = Math.PI;
+                this.dissolveProgress = 0;
+                this.heroPosition = { x: 6.54, y: -0.693 };
+                this.heroScale = this.isMobile ? 1.32 : 1.62;
+                this.scatterProgress = 0;
+                this.assemblyProgress = 0;
+                this.craneScaleCurrent = this.heroScale;
+                this.craneScaleTarget = this.heroScale;
+                this.assemblyDelay = 0.35;
+                this.assemblyDuration = 3.2;
+                this.assemblyStartTime = null;
+                this.scatterFade = 1;
+                this.scatterFadeTarget = 1;
+                
+                // Original positions
+                this.craneOriginalPositions = [];
+                this.craneSpawnPositions = [];
+                this.craneScatterTargets = [];
+                this.featuresFreezeStart = Infinity;
+                this.zoomSectionStart = Infinity;
+                this.background2Triggered = false;
+                this.backgroundLayer2 = null;
+                this.background2OriginalPositions = [];
+                this.background2SpawnPositions = [];
+                this.background2Sizes = [];
+                this.background2Depths = [];
+                this.background2StartTime = null;
+                this.background2Progress = 0;
+                this.backgroundOriginalPositions = [];
+                this.backgroundVelocities = [];
+                
+                // Performance
+                this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                this.init();
+            }
+
+            init() {
+                this.setupScene();
+                this.createCrane();
+                this.createBackgroundParticles();
+                this.createBackgroundLayer2();
+                this.setupEventListeners();
+                this.updateFeatureOffset();
+                this.updateZoomOffset();
+                this.hideLoadingScreen();
+                this.animate();
+            }
+
+            setupScene() {
+                // Scene
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0xfafbfc);
+                
+                // Camera
+                const aspect = window.innerWidth / window.innerHeight;
+                this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
+                this.camera.position.set(0, 0, 12);
+                
+                // Renderer
+                this.renderer = new THREE.WebGLRenderer({ 
+                    antialias: !this.isMobile,
+                    alpha: true
+                });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.container.appendChild(this.renderer.domElement);
+            }
+
+            createCrane() {
+                const particleCount = this.isMobile ? 4000 : 10000;
+                const positions = [];
+                const colors = [];
+                const sizes = [];
+                
+                // ============================================
+                // DARU SZÍNEK - ITT MÓDOSÍTHATOD! (kb. 610-615. sor)
+                // ============================================
+                const color1 = new THREE.Color(0x0066cc); // Sötét kék
+                const color2 = new THREE.Color(0x0088aa); // Sötét cián
+                const color3 = new THREE.Color(0x005577); // Sötét teal
+                // ============================================
+                
+                // Generate crane structure
+                const cranePoints = this.generateCranePoints(particleCount);
+                
+                cranePoints.forEach((point, i) => {
+                    const spawnRadius = 20 + Math.random() * 25;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    const sx = Math.sin(phi) * Math.cos(theta) * spawnRadius;
+                    const sy = Math.sin(phi) * Math.sin(theta) * spawnRadius;
+                    const sz = Math.cos(phi) * spawnRadius;
+
+                    // Spawn positions come from all around the scene
+                    positions.push(sx, sy, sz);
+                    this.craneSpawnPositions.push({ x: sx, y: sy, z: sz });
+                    
+                    // Target positions form the crane
+                    this.craneOriginalPositions.push({
+                        x: point.x,
+                        y: point.y,
+                        z: point.z
+                    });
+
+                    // Scatter targets for background spread
+                    this.craneScatterTargets.push({
+                        x: (Math.random() - 0.5) * 50,
+                        y: (Math.random() - 0.5) * 36,
+                        z: (Math.random() - 0.5) * 20
+                    });
+                    
+                    // Random color selection
+                    const t = Math.random();
+                    let color;
+                    if (t < 0.33) color = color1;
+                    else if (t < 0.66) color = color2;
+                    else color = color3;
+                    
+                    colors.push(color.r, color.g, color.b);
+                    sizes.push(0.04 + Math.random() * 0.06);
+                });
+                
+                // Create geometry
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+                
+                // Shader material - JAVÍTOTT verzió világos háttérhez
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+                        uDissolve: { value: 0 },
+                        uFade: { value: 1 }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        varying vec3 vColor;
+                        varying float vSize;
+                        uniform float uPixelRatio;
+                        uniform float uDissolve;
+                        
+                        void main() {
+                            vColor = color;
+                            vSize = size;
+                            
+                            vec3 pos = position;
+                            
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                            gl_PointSize = size * uPixelRatio * (350.0 / -mvPosition.z);
+                            gl_PointSize = max(gl_PointSize, 2.0);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        varying float vSize;
+                        uniform float uDissolve;
+                        uniform float uFade;
+                        
+                        void main() {
+                            vec2 center = gl_PointCoord - vec2(0.5);
+                            float dist = length(center);
+                            
+                            if (dist > 0.5) discard;
+                            
+                            // Solid core with soft edge
+                            float alpha = 1.0 - smoothstep(0.2, 0.5, dist);
+                            alpha *= (1.0 - uDissolve);
+                            alpha *= uFade;
+                            
+                            // Make colors more vibrant
+                            vec3 finalColor = vColor * 1.2;
+                            
+                            gl_FragColor = vec4(finalColor, alpha);
+                        }
+                    `,
+                    transparent: true,
+                    vertexColors: true,
+                    depthWrite: false,
+                    depthTest: true
+                });
+                
+                this.craneParticles = new THREE.Points(geometry, material);
+                
+                // Create group for transformations
+                this.craneGroup = new THREE.Group();
+                this.craneGroup.add(this.craneParticles);
+                this.craneGroup.position.x = this.heroPosition.x;
+                this.craneGroup.position.y = this.heroPosition.y;
+                this.craneGroup.scale.set(this.craneScaleCurrent, this.craneScaleCurrent, this.craneScaleCurrent);
+                this.craneGroup.rotation.y = this.craneRotationCurrent;
+                
+                this.scene.add(this.craneGroup);
+            }
+
+            generateCranePoints(count) {
+                const points = [];
+                
+                // Crane dimensions
+                const baseWidth = 1.8;
+                const baseHeight = 0.4;
+                const towerHeight = 5;
+                const towerWidth = 0.5;
+                const jibLength = 4;
+                const counterweightLength = 1.5;
+                const cabinSize = 0.6;
+                
+                // Point distribution
+                const baseCount = Math.floor(count * 0.12);
+                const towerCount = Math.floor(count * 0.28);
+                const jibCount = Math.floor(count * 0.25);
+                const counterweightCount = Math.floor(count * 0.12);
+                const cabinCount = Math.floor(count * 0.08);
+                const hookCount = Math.floor(count * 0.08);
+                const supportCount = count - baseCount - towerCount - jibCount - counterweightCount - cabinCount - hookCount;
+                
+                const baseY = -2.5;
+                
+                // BASE - platform
+                for (let i = 0; i < baseCount; i++) {
+                    // Platform edges
+                    if (Math.random() < 0.6) {
+                        const side = Math.floor(Math.random() * 4);
+                        let x, z;
+                        const t = Math.random();
+                        
+                        switch(side) {
+                            case 0: x = -baseWidth/2 + t * baseWidth; z = -baseWidth/2; break;
+                            case 1: x = -baseWidth/2 + t * baseWidth; z = baseWidth/2; break;
+                            case 2: x = -baseWidth/2; z = -baseWidth/2 + t * baseWidth; break;
+                            case 3: x = baseWidth/2; z = -baseWidth/2 + t * baseWidth; break;
+                        }
+                        
+                        points.push({
+                            x: x + (Math.random() - 0.5) * 0.05,
+                            y: baseY + Math.random() * baseHeight,
+                            z: z + (Math.random() - 0.5) * 0.05
+                        });
+                    } else {
+                        // Platform surface
+                        points.push({
+                            x: (Math.random() - 0.5) * baseWidth,
+                            y: baseY + Math.random() * 0.05,
+                            z: (Math.random() - 0.5) * baseWidth
+                        });
+                    }
+                }
+                
+                // TOWER - lattice structure
+                for (let i = 0; i < towerCount; i++) {
+                    const t = Math.random();
+                    const y = baseY + baseHeight + t * towerHeight;
+                    
+                    const rand = Math.random();
+                    
+                    if (rand < 0.4) {
+                        // Four corner posts
+                        const corner = Math.floor(Math.random() * 4);
+                        const cx = corner % 2 === 0 ? -1 : 1;
+                        const cz = corner < 2 ? -1 : 1;
+                        
+                        points.push({
+                            x: cx * towerWidth * 0.4 + (Math.random() - 0.5) * 0.03,
+                            y: y,
+                            z: cz * towerWidth * 0.4 + (Math.random() - 0.5) * 0.03
+                        });
+                    } else if (rand < 0.7) {
+                        // Horizontal bracing
+                        const level = Math.floor(t * 8);
+                        const levelY = baseY + baseHeight + (level / 8) * towerHeight;
+                        const side = Math.floor(Math.random() * 4);
+                        const st = Math.random();
+                        
+                        let x, z;
+                        switch(side) {
+                            case 0: x = -towerWidth * 0.4 + st * towerWidth * 0.8; z = -towerWidth * 0.4; break;
+                            case 1: x = -towerWidth * 0.4 + st * towerWidth * 0.8; z = towerWidth * 0.4; break;
+                            case 2: x = -towerWidth * 0.4; z = -towerWidth * 0.4 + st * towerWidth * 0.8; break;
+                            case 3: x = towerWidth * 0.4; z = -towerWidth * 0.4 + st * towerWidth * 0.8; break;
+                        }
+                        
+                        points.push({ x, y: levelY, z });
+                    } else {
+                        // Diagonal bracing
+                        const angle = Math.random() * Math.PI * 2;
+                        const radius = towerWidth * 0.35;
+                        
+                        points.push({
+                            x: Math.cos(angle + t * 6) * radius,
+                            y: y,
+                            z: Math.sin(angle + t * 6) * radius
+                        });
+                    }
+                }
+                
+                // JIB (main boom)
+                const jibY = baseY + baseHeight + towerHeight;
+                
+                for (let i = 0; i < jibCount; i++) {
+                    const t = Math.random();
+                    const x = t * jibLength;
+                    
+                    const rand = Math.random();
+                    
+                    if (rand < 0.35) {
+                        // Top chord
+                        points.push({
+                            x: x,
+                            y: jibY + 0.25 + (Math.random() - 0.5) * 0.03,
+                            z: (Math.random() - 0.5) * 0.08
+                        });
+                    } else if (rand < 0.7) {
+                        // Bottom chords
+                        const side = Math.random() < 0.5 ? -1 : 1;
+                        points.push({
+                            x: x,
+                            y: jibY + (Math.random() - 0.5) * 0.03,
+                            z: side * 0.2 + (Math.random() - 0.5) * 0.03
+                        });
+                    } else {
+                        // Diagonal bracing
+                        points.push({
+                            x: x,
+                            y: jibY + Math.random() * 0.25,
+                            z: (Math.random() - 0.5) * 0.35
+                        });
+                    }
+                }
+                
+                // COUNTERWEIGHT ARM
+                for (let i = 0; i < counterweightCount; i++) {
+                    const t = Math.random();
+                    const x = -t * counterweightLength;
+                    
+                    // Arm structure
+                    if (Math.random() < 0.6) {
+                        points.push({
+                            x: x,
+                            y: jibY + (Math.random() - 0.5) * 0.3,
+                            z: (Math.random() - 0.5) * 0.3
+                        });
+                    } else {
+                        // Counterweight blocks
+                        if (t > 0.6) {
+                            points.push({
+                                x: x + (Math.random() - 0.5) * 0.3,
+                                y: jibY - 0.3 - Math.random() * 0.5,
+                                z: (Math.random() - 0.5) * 0.4
+                            });
+                        }
+                    }
+                }
+                
+                // CABIN
+                const cabinY = jibY - 1;
+                
+                for (let i = 0; i < cabinCount; i++) {
+                    // Cabin box outline
+                    const rand = Math.random();
+                    
+                    if (rand < 0.5) {
+                        // Edges
+                        const edge = Math.floor(Math.random() * 12);
+                        const t = Math.random();
+                        let x, y, z;
+                        
+                        switch(edge % 4) {
+                            case 0: x = -cabinSize/2; y = cabinY + t * cabinSize; z = cabinSize/2 + 0.3; break;
+                            case 1: x = cabinSize/2; y = cabinY + t * cabinSize; z = cabinSize/2 + 0.3; break;
+                            case 2: x = -cabinSize/2 + t * cabinSize; y = cabinY; z = cabinSize/2 + 0.3; break;
+                            case 3: x = -cabinSize/2 + t * cabinSize; y = cabinY + cabinSize; z = cabinSize/2 + 0.3; break;
+                        }
+                        
+                        points.push({ x, y, z });
+                    } else {
+                        // Windows/surfaces
+                        points.push({
+                            x: (Math.random() - 0.5) * cabinSize,
+                            y: cabinY + Math.random() * cabinSize,
+                            z: cabinSize/2 + 0.3 + Math.random() * 0.05
+                        });
+                    }
+                }
+                
+                // HOOK AND CABLE
+                const hookX = jibLength * 0.75;
+                const hookDropHeight = 2.5;
+                
+                for (let i = 0; i < hookCount; i++) {
+                    const t = Math.random();
+                    
+                    if (t < 0.7) {
+                        // Cable
+                        points.push({
+                            x: hookX + (Math.random() - 0.5) * 0.03,
+                            y: jibY - t * hookDropHeight,
+                            z: (Math.random() - 0.5) * 0.03
+                        });
+                    } else {
+                        // Hook
+                        const hookY = jibY - hookDropHeight;
+                        const angle = Math.random() * Math.PI * 2;
+                        const radius = 0.1 + Math.random() * 0.05;
+                        
+                        points.push({
+                            x: hookX + Math.cos(angle) * radius,
+                            y: hookY - Math.random() * 0.2,
+                            z: Math.sin(angle) * radius
+                        });
+                    }
+                }
+                
+                // SUPPORT CABLES
+                for (let i = 0; i < supportCount; i++) {
+                    const t = Math.random();
+                    
+                    if (Math.random() < 0.6) {
+                        // Jib support cables
+                        const cableT = Math.random();
+                        points.push({
+                            x: cableT * jibLength * 0.9,
+                            y: jibY + 0.5 - cableT * 0.4,
+                            z: (Math.random() - 0.5) * 0.04
+                        });
+                    } else {
+                        // Counter-jib support cables
+                        const cableT = Math.random();
+                        points.push({
+                            x: -cableT * counterweightLength * 0.9,
+                            y: jibY + 0.5 - cableT * 0.3,
+                            z: (Math.random() - 0.5) * 0.04
+                        });
+                    }
+                }
+                
+                // Tower top/peak
+                for (let i = 0; i < 200; i++) {
+                    points.push({
+                        x: (Math.random() - 0.5) * 0.2,
+                        y: jibY + 0.3 + Math.random() * 0.5,
+                        z: (Math.random() - 0.5) * 0.2
+                    });
+                }
+                
+                return points;
+            }
+
+            createBackgroundParticles() {
+                const particleCount = this.isMobile ? 2000 : 6000;
+                const positions = [];
+                const colors = [];
+                const sizes = [];
+                
+                // ============================================
+                // HÁTTÉR RÉSZECSKE SZÍNEK - ITT MÓDOSÍTHATOD!
+                // ============================================
+                const color1 = new THREE.Color(0x0077aa);
+                const color2 = new THREE.Color(0x006699);
+                const color3 = new THREE.Color(0x005588);
+                // ============================================
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const x = (Math.random() - 0.5) * 42;
+                    const y = (Math.random() - 0.5) * 32;
+                    const z = (Math.random() - 0.5) * 18 - 8; // pull particles closer for visibility
+                    
+                    positions.push(x, y, z);
+                    this.backgroundOriginalPositions.push({ x, y, z });
+                    
+                    const t = Math.random();
+                    let color;
+                    if (t < 0.33) color = color1;
+                    else if (t < 0.66) color = color2;
+                    else color = color3;
+                    
+                    colors.push(color.r, color.g, color.b);
+                    sizes.push(0.0528 + Math.random() * 0.0792); // +20% size for stronger presence
+                    
+                    this.backgroundVelocities.push({
+                        x: (Math.random() - 0.5) * 0.003,
+                        y: (Math.random() - 0.5) * 0.003,
+                        z: (Math.random() - 0.5) * 0.001
+                    });
+                }
+                
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+                
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+                        uOpacity: { value: 0 }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        varying vec3 vColor;
+                        uniform float uPixelRatio;
+                        
+                        void main() {
+                            vColor = color;
+                            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                            gl_PointSize = size * uPixelRatio * (300.0 / -mvPosition.z);
+                            gl_PointSize = max(gl_PointSize, 1.5);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        uniform float uOpacity;
+                        
+                        void main() {
+                            float dist = length(gl_PointCoord - vec2(0.5));
+                            if (dist > 0.5) discard;
+                            
+                            float alpha = 1.0 - smoothstep(0.1, 0.5, dist);
+                            gl_FragColor = vec4(vColor, uOpacity * alpha * 0.7);
+                        }
+                    `,
+                    transparent: true,
+                    vertexColors: true,
+                    depthWrite: false
+                });
+                
+                this.backgroundParticles = new THREE.Points(geometry, material);
+                this.scene.add(this.backgroundParticles);
+            }
+
+            createBackgroundLayer2() {
+                const particleCount = this.isMobile ? 800 : 1600;
+                const positions = [];
+                const colors = [];
+                const sizes = [];
+
+                const color1 = new THREE.Color(0x0077aa);
+                const color2 = new THREE.Color(0x006699);
+                const color3 = new THREE.Color(0x005588);
+
+                for (let i = 0; i < particleCount; i++) {
+                    // Spawn far away
+                    const spawnR = 60 + Math.random() * 40;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    const sx = Math.sin(phi) * Math.cos(theta) * spawnR;
+                    const sy = Math.sin(phi) * Math.sin(theta) * spawnR;
+                    const sz = Math.cos(phi) * spawnR;
+                    this.background2SpawnPositions.push({ x: sx, y: sy, z: sz });
+                    positions.push(sx, sy, sz);
+
+                    // Target shell with depth layers (closer for stronger depth)
+                    const layer = Math.random();
+                    const tx = (Math.random() - 0.5) * 38;
+                    const ty = (Math.random() - 0.5) * 26;
+                    const tz = -3 - layer * 11; // near -3, far -14
+                    this.background2OriginalPositions.push({ x: tx, y: ty, z: tz });
+
+                    // Depth factor 0 (far) -> 1 (near)
+                    const depthFactor = Math.max(0, Math.min(1, (-tz - 3) / 11));
+                    this.background2Depths.push(depthFactor);
+
+                    const t = Math.random();
+                    let color;
+                    if (t < 0.33) color = color1; else if (t < 0.66) color = color2; else color = color3;
+                    colors.push(color.r, color.g, color.b);
+
+                    // Larger points near camera, smaller far away; store size for parallax scaling
+                    const baseSize = 0.12 + Math.random() * 0.16;
+                    const size = baseSize * (1 + depthFactor * 1.1); // near points ~2.1x
+                    sizes.push(size);
+                    this.background2Sizes.push(size);
+                }
+
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+                        uOpacity: { value: 0 }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        varying vec3 vColor;
+                        uniform float uPixelRatio;
+                        
+                        void main() {
+                            vColor = color;
+                            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                            gl_PointSize = size * uPixelRatio * (320.0 / -mvPosition.z);
+                            gl_PointSize = max(gl_PointSize, 2.5);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        uniform float uOpacity;
+                        
+                        void main() {
+                            vec2 c = gl_PointCoord - vec2(0.5);
+                            float d = length(c);
+                            if (d > 0.5) discard;
+                            float alpha = (1.0 - smoothstep(0.25, 0.5, d)) * uOpacity;
+                            gl_FragColor = vec4(vColor, alpha);
+                        }
+                    `,
+                    transparent: true,
+                    vertexColors: true,
+                    depthWrite: false
+                });
+
+                this.backgroundLayer2 = new THREE.Points(geometry, material);
+                this.backgroundLayer2.visible = false;
+                this.scene.add(this.backgroundLayer2);
+            }
+
+            setupEventListeners() {
+                window.addEventListener('scroll', () => this.onScroll(), { passive: true });
+                
+                if (!this.isMobile) {
+                    window.addEventListener('mousemove', (e) => this.onMouseMove(e), { passive: true });
+                }
+                
+                window.addEventListener('resize', () => this.onResize());
+                this.setupHeader();
+            }
+
+            updateFeatureOffset() {
+                const features = document.getElementById('features');
+                if (features) {
+                    this.featuresFreezeStart = features.offsetTop;
+                }
+            }
+
+            updateZoomOffset() {
+                const zoom = document.getElementById('zoom');
+                if (zoom) {
+                    this.zoomSectionStart = zoom.offsetTop;
+                }
+            }
+
+            setupHeader() {
+                const header = document.getElementById('header');
+                const scrollProgress = document.getElementById('scrollProgress');
+                
+                window.addEventListener('scroll', () => {
+                    const scrolled = window.scrollY > 100;
+                    header.classList.toggle('scrolled', scrolled);
+                    
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const progress = window.scrollY / docHeight;
+                    scrollProgress.style.transform = `scaleX(${progress})`;
+                });
+            }
+
+            onScroll() {
+                this.targetScrollY = window.scrollY;
+            }
+
+            onMouseMove(event) {
+                this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                
+                const vector = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.5);
+                vector.unproject(this.camera);
+                const dir = vector.sub(this.camera.position).normalize();
+                const distance = -this.camera.position.z / dir.z;
+                this.mouseWorld = this.camera.position.clone().add(dir.multiplyScalar(distance));
+            }
+
+            onResize() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                
+                this.camera.aspect = width / height;
+                this.camera.updateProjectionMatrix();
+                
+                this.renderer.setSize(width, height);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+                this.updateFeatureOffset();
+                this.updateZoomOffset();
+            }
+
+            hideLoadingScreen() {
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                }, 800);
+            }
+
+            updateCraneTransform() {
+                if (!this.craneGroup) return;
+                
+                // Smooth scroll interpolation
+                this.scrollY += (this.targetScrollY - this.scrollY) * 0.171; // 5% slower response to scroll
+                
+                const windowHeight = window.innerHeight;
+                const heroEnd = windowHeight * 0.05; // start moving almost immediately
+                const transitionEnd = heroEnd + windowHeight * 0.84; // 5% longer transition for slower traverse
+                const zoomStart = transitionEnd;
+                const zoomEnd = zoomStart + windowHeight * 2;
+                const flipLead = 0.0; // start flip as soon as scroll begins
+                const leftOffset = 12.96; // 10% less left shift than before
+                const centerX = 0;
+                const centerY = 0;
+                const verticalLift = 0.5;
+                const scatterScaleBoost = 0.02; // minimal scale-up to keep crane in frame
+                const spinGain = 0.6; // slow spin after section 2 based on scroll
+                const flipEase = (t) => this.easeInOutCubic(Math.min(1, Math.max(0, t)));
+                let targetRotation = 0;
+                const baseScale = this.heroScale;
+                let targetScale = baseScale;
+                let scatterTarget = 0;
+                const inZoomSection = this.scrollY >= this.zoomSectionStart - 40;
+                const inFeatures = this.scrollY >= this.featuresFreezeStart - 50;
+                
+                // Phase 1: Hero
+                if (this.scrollY < heroEnd) {
+                    this.craneGroup.position.x = this.heroPosition.x;
+                    this.craneGroup.position.y = this.heroPosition.y;
+                    this.dissolveProgress = 0;
+                    scatterTarget = 0;
+                    this.craneGroup.visible = true;
+                    this.camera.position.z = 12;
+                    targetRotation = Math.PI; // show the far side while assembled
+                }
+                // Phase 2: Transition - move left
+                else if (this.scrollY < transitionEnd) {
+                    const t = (this.scrollY - heroEnd) / (transitionEnd - heroEnd);
+                    const eased = this.easeInOutCubic(t);
+                    const flipProgress = flipEase((t - flipLead) / (1 - flipLead));
+
+                    this.craneGroup.position.x = this.heroPosition.x - leftOffset * eased;
+                    this.craneGroup.position.y = this.heroPosition.y + eased * verticalLift;
+                    this.dissolveProgress = 0;
+                    scatterTarget = 0;
+                    this.craneGroup.visible = true;
+                    this.camera.position.z = 12;
+                    targetRotation = Math.PI - Math.PI * flipProgress; // flip toward the viewer immediately on scroll
+                }
+                // Phase 3: Zoom and dissolve
+                else if (this.scrollY < zoomEnd) {
+                    const t = (this.scrollY - zoomStart) / (zoomEnd - zoomStart);
+                    const eased = this.easeInOutCubic(t);
+                    const scatterStart = 0.7; // do not delay further, but slow the growth
+                    const scatterT = Math.max(0, (t - scatterStart) / (1 - scatterStart));
+                    const scatterEase = this.easeInOutCubic(scatterT);
+                    // Move to center and prepare scatter instead of dissolving
+                    const startX = this.heroPosition.x - leftOffset;
+                    const startY = this.heroPosition.y + verticalLift;
+                    this.craneGroup.position.x = startX + (centerX - startX) * eased;
+                    this.craneGroup.position.y = startY + (centerY - startY) * eased;
+                    this.dissolveProgress = 0;
+                    scatterTarget = scatterEase;
+                    this.camera.position.z = 12 - eased * 3; // stay farther to avoid cropping
+                    targetScale = baseScale * 0.9 * (1 + scatterScaleBoost * eased);
+                    
+                    this.craneGroup.visible = true;
+                    const spin = Math.max(0, (this.scrollY - transitionEnd) / windowHeight) * spinGain;
+                    targetRotation = spin;
+                    
+                    // Update dissolve uniform
+                    if (this.craneParticles) {
+                        this.craneParticles.material.uniforms.uDissolve.value = 0;
+                    }
+                }
+                // Phase 4: Dissolved
+                else {
+                    this.dissolveProgress = 0;
+                    scatterTarget = 1;
+                    this.craneGroup.visible = true;
+                    this.camera.position.z = 9;
+                    targetScale = baseScale * 0.9 * (1 + scatterScaleBoost);
+                    const spin = Math.max(0, (this.scrollY - transitionEnd) / windowHeight) * spinGain;
+                    targetRotation = spin;
+                }
+
+                // Force scatter and fade when entering the zoom section and beyond
+                if (inZoomSection) {
+                    scatterTarget = 1;
+                    this.scatterFadeTarget = 0;
+                } else {
+                    this.scatterFadeTarget = 1;
+                    if (!this.craneGroup.visible) this.craneGroup.visible = true;
+                }
+                
+                // Update background opacity
+                if (this.backgroundParticles) {
+                    const bgOpacity = Math.min(1, this.dissolveProgress * 2) * (inFeatures ? 0 : 1) * (inZoomSection ? Math.max(0, 1 - this.dissolveProgress) : 1);
+                    this.backgroundParticles.material.uniforms.uOpacity.value = bgOpacity;
+                }
+
+                // Smooth scatter progression to slow the spread dramatically
+                this.scatterProgress += (scatterTarget - this.scatterProgress) * 0.05;
+                this.scatterProgress = Math.min(1, Math.max(0, this.scatterProgress));
+
+                // Smooth fade for crane points (avoids noisy dissolve)
+                this.scatterFade += (this.scatterFadeTarget - this.scatterFade) * 0.08;
+                this.scatterFade = Math.min(1, Math.max(0, this.scatterFade));
+                if (this.craneParticles) {
+                    this.craneParticles.material.uniforms.uFade.value = this.scatterFade;
+                }
+
+                // Smoothly apply the desired rotation and size
+                this.craneRotationTarget = targetRotation;
+                this.craneRotationCurrent += (this.craneRotationTarget - this.craneRotationCurrent) * 0.15;
+                this.craneGroup.rotation.y = this.craneRotationCurrent;
+
+                // Smooth scale to avoid jumps between sections
+                this.craneScaleTarget = targetScale;
+                this.craneScaleCurrent += (this.craneScaleTarget - this.craneScaleCurrent) * 0.12;
+                this.craneGroup.scale.set(this.craneScaleCurrent, this.craneScaleCurrent, this.craneScaleCurrent);
+            }
+
+            updateCraneRotation() {
+                // Rotation is now driven by scroll; keep method for future extensions
+            }
+
+            updateCraneAssembly() {
+                if (!this.craneParticles || this.craneOriginalPositions.length === 0) return;
+                if (this.assemblyStartTime === null) {
+                    this.assemblyStartTime = this.clock.getElapsedTime();
+                }
+                const t = this.clock.getElapsedTime() - this.assemblyStartTime;
+                const progress = Math.min(1, Math.max(0, (t - this.assemblyDelay) / this.assemblyDuration));
+                this.assemblyProgress = progress;
+                if (progress === 0) return;
+
+                const positions = this.craneParticles.geometry.attributes.position.array;
+                const ease = this.easeInOutCubic(progress);
+
+                for (let i = 0; i < this.craneOriginalPositions.length; i++) {
+                    const orig = this.craneOriginalPositions[i];
+                    const spawn = this.craneSpawnPositions[i];
+                    const idx = i * 3;
+                    const swirl = 1 - ease;
+
+                    const ox = spawn.x + (orig.x - spawn.x) * ease + Math.sin(idx + t * 2) * 0.08 * swirl;
+                    const oy = spawn.y + (orig.y - spawn.y) * ease + Math.cos(idx + t * 1.8) * 0.08 * swirl;
+                    const oz = spawn.z + (orig.z - spawn.z) * ease + Math.sin(idx + t * 2.2) * 0.08 * swirl;
+
+                    positions[idx] = ox;
+                    positions[idx + 1] = oy;
+                    positions[idx + 2] = oz;
+                }
+
+                this.craneParticles.geometry.attributes.position.needsUpdate = true;
+            }
+
+            updateCraneDissolve() {
+                if (!this.craneParticles || this.dissolveProgress === 0 || !this.craneGroup.visible) return;
+                
+                const positions = this.craneParticles.geometry.attributes.position.array;
+                const time = this.clock.getElapsedTime();
+                
+                for (let i = 0; i < this.craneOriginalPositions.length; i++) {
+                    const orig = this.craneOriginalPositions[i];
+                    const idx = i * 3;
+                    
+                    const spreadFactor = this.dissolveProgress * 8;
+                    const noiseX = Math.sin(time * 2 + i * 0.1) * 0.3;
+                    const noiseY = Math.cos(time * 1.5 + i * 0.15) * 0.3;
+                    const noiseZ = Math.sin(time * 1.8 + i * 0.12) * 0.3;
+                    
+                    const dirX = orig.x + (Math.random() - 0.5) * 0.5;
+                    const dirY = orig.y + (Math.random() - 0.5) * 0.5;
+                    const dirZ = orig.z + (Math.random() - 0.5) * 0.5;
+                    
+                    positions[idx] = orig.x + dirX * spreadFactor * 0.3 + noiseX * this.dissolveProgress;
+                    positions[idx + 1] = orig.y + dirY * spreadFactor * 0.3 + noiseY * this.dissolveProgress;
+                    positions[idx + 2] = orig.z + dirZ * spreadFactor * 0.3 + noiseZ * this.dissolveProgress;
+                }
+                
+                this.craneParticles.geometry.attributes.position.needsUpdate = true;
+            }
+
+            updateCraneScatter() {
+                if (!this.craneParticles || this.scatterProgress === 0) return;
+                const positions = this.craneParticles.geometry.attributes.position.array;
+                const time = this.clock.getElapsedTime();
+                const ease = this.easeInOutCubic(this.scatterProgress);
+                const outFlow = this.background2StartTime ? Math.min(1, this.background2Progress * 1.5) : 0;
+
+                for (let i = 0; i < this.craneOriginalPositions.length; i++) {
+                    const orig = this.craneOriginalPositions[i];
+                    const target = this.craneScatterTargets[i];
+                    const idx = i * 3;
+
+                    // Lerp to scatter target, then push outward when layer2 inflow starts
+                    const baseX = orig.x + (target.x - orig.x) * ease;
+                    const baseY = orig.y + (target.y - orig.y) * ease;
+                    const baseZ = orig.z + (target.z - orig.z) * ease;
+
+                    let x = baseX;
+                    let y = baseY;
+                    let z = baseZ;
+
+                    if (outFlow > 0) {
+                        const dirX = baseX;
+                        const dirY = baseY;
+                        const dirZ = baseZ;
+                        const len = Math.max(0.1, Math.sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
+                        const push = outFlow * 12;
+                        x += (dirX / len) * push;
+                        y += (dirY / len) * push;
+                        z += (dirZ / len) * push;
+                    }
+
+                    // Subtle breathing + mouse parallax for depth
+                    const pulse = Math.sin(time * 0.8 + i * 0.02) * 0.05 * ease;
+                    x += pulse;
+                    y += pulse * 0.6;
+                    z += Math.cos(time * 0.6 + i * 0.015) * 0.08 * ease;
+
+                    if (!this.isMobile && this.mouseWorld) {
+                        const dx = x - this.mouseWorld.x;
+                        const dy = y - this.mouseWorld.y;
+                        const dist = Math.max(0.1, Math.sqrt(dx * dx + dy * dy));
+                        const parallax = Math.min(0.25, 1 / dist) * 0.6 * ease;
+                        x += dx * parallax * 0.05;
+                        y += dy * parallax * 0.05;
+                        z += parallax * 0.5;
+                    }
+
+                    positions[idx] = x;
+                    positions[idx + 1] = y;
+                    positions[idx + 2] = z;
+                }
+
+                this.craneParticles.geometry.attributes.position.needsUpdate = true;
+            }
+
+            updateBackgroundLayer2(deltaTime) {
+                if (!this.backgroundLayer2) return;
+
+                const positions = this.backgroundLayer2.geometry.attributes.position.array;
+                const time = this.clock.getElapsedTime();
+                const opacityUniform = this.backgroundLayer2.material.uniforms.uOpacity;
+
+                // Trigger start when reaching the empty zoom section
+                if (this.scrollY >= this.zoomSectionStart - 40 && this.background2StartTime === null) {
+                    this.background2StartTime = time;
+                }
+
+                // Fade out layer1 when layer2 starts
+                if (this.background2StartTime !== null && this.backgroundParticles) {
+                    const t = Math.min(1, (time - this.background2StartTime) / 1.2);
+                    this.backgroundParticles.material.uniforms.uOpacity.value = 1 - t;
+                }
+
+                // Animate inflow for layer2 once; then only mouse parallax
+                if (this.background2StartTime !== null && this.background2Progress < 1) {
+                    const t = Math.min(1, (time - this.background2StartTime) / 2.4);
+                    this.background2Progress = t;
+                    const ease = this.easeInOutCubic(t);
+                    for (let i = 0; i < this.background2OriginalPositions.length; i++) {
+                        const target = this.background2OriginalPositions[i];
+                        const spawn = this.background2SpawnPositions[i];
+                        const idx = i * 3;
+                        positions[idx] = spawn.x + (target.x - spawn.x) * ease;
+                        positions[idx + 1] = spawn.y + (target.y - spawn.y) * ease;
+                        positions[idx + 2] = spawn.z + (target.z - spawn.z) * ease;
+                    }
+                    this.backgroundLayer2.geometry.attributes.position.needsUpdate = true;
+                }
+
+                // After inflow, respond only to mouse for depth
+                if (this.background2Progress >= 1 && !this.isMobile && this.mouseWorld) {
+                    const timeWave = Math.sin(time * 0.35) * 0.05;
+                    for (let i = 0; i < this.background2OriginalPositions.length; i++) {
+                        const target = this.background2OriginalPositions[i];
+                        const size = this.background2Sizes[i] || 0.2;
+                        const depth = this.background2Depths[i] || 0.5;
+                        const idx = i * 3;
+                        let x = target.x;
+                        let y = target.y;
+                        let z = target.z;
+
+                        // idle breathing based on depth (closer points breathe slightly more)
+                        const idleAmp = 0.05 + depth * 0.08;
+                        x += Math.sin(time * 0.6 + idx * 0.013) * idleAmp;
+                        y += Math.cos(time * 0.5 + idx * 0.011) * idleAmp * 0.7;
+                        z += Math.sin(time * 0.4 + idx * 0.017) * idleAmp * 0.9;
+
+                        const dx = x - this.mouseWorld.x;
+                        const dy = y - this.mouseWorld.y;
+                        const dist = Math.max(0.01, Math.sqrt(dx * dx + dy * dy));
+                        const parallaxBase = Math.min(0.9, 1 / dist);
+                        const parallax = parallaxBase * (1.1 + depth * 1.8); // depth-weighted parallax strength
+
+                        x += dx * parallax * (0.08 + depth * 0.08);
+                        y += dy * parallax * (0.08 + depth * 0.08);
+                        z += parallax * (1.0 + size * 0.9 + depth * 1.4);
+
+                        positions[idx] = x;
+                        positions[idx + 1] = y;
+                        positions[idx + 2] = z;
+                    }
+                    this.backgroundLayer2.geometry.attributes.position.needsUpdate = true;
+                }
+
+                // Opacity ramps in once inflow starts
+                if (this.background2StartTime !== null) {
+                    const t = Math.min(1, (time - this.background2StartTime) / 1.5);
+                    opacityUniform.value = t;
+                    this.backgroundLayer2.visible = true;
+                }
+            }
+
+            updateBackgroundParticles(deltaTime) {
+                if (!this.backgroundParticles) return;
+                
+                const positions = this.backgroundParticles.geometry.attributes.position.array;
+                const time = this.clock.getElapsedTime();
+                
+                // Stop scroll-driven drift from Core Features onward; keep only gentle motion and mouse parallax
+                const freezeBackground = this.scrollY >= this.zoomSectionStart - 40;
+
+                for (let i = 0; i < this.backgroundOriginalPositions.length; i++) {
+                    const orig = this.backgroundOriginalPositions[i];
+                    const vel = this.backgroundVelocities[i];
+                    const idx = i * 3;
+                    
+                    let x = positions[idx];
+                    let y = positions[idx + 1];
+                    let z = positions[idx + 2];
+                    
+                    if (!freezeBackground) {
+                        x += vel.x;
+                        y += vel.y;
+                        z += vel.z;
+
+                        // Gentle wave motion only before section 4
+                        x += Math.sin(time * 0.5 + i * 0.01) * 0.002;
+                        y += Math.cos(time * 0.3 + i * 0.01) * 0.002;
+                    }
+                    
+                    // Mouse-driven parallax and mild repulsion for depth
+                    if (!this.isMobile && this.mouseWorld) {
+                        const dx = x - this.mouseWorld.x;
+                        const dy = y - this.mouseWorld.y;
+                        const dist = Math.max(0.01, Math.sqrt(dx * dx + dy * dy));
+                        const repelRadius = 4;
+                        
+                        if (dist < repelRadius) {
+                            const force = (1 - dist / repelRadius) * 0.18;
+                            x += (dx / dist) * force;
+                            y += (dy / dist) * force;
+                        }
+
+                        const parallax = Math.min(0.35, 1 / dist) * 0.8;
+                        x += dx * parallax * 0.04;
+                        y += dy * parallax * 0.04;
+                        z += parallax * 0.6;
+                    }
+                    
+                    // Bounds
+                    if (Math.abs(x) > 30) x = orig.x;
+                    if (Math.abs(y) > 25) y = orig.y;
+                    if (Math.abs(z) > 20) z = orig.z;
+                    
+                    positions[idx] = x;
+                    positions[idx + 1] = y;
+                    positions[idx + 2] = z;
+                }
+                
+                this.backgroundParticles.geometry.attributes.position.needsUpdate = true;
+            }
+
+            easeInOutCubic(t) {
+                return t < 0.5 
+                    ? 4 * t * t * t 
+                    : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                const deltaTime = this.clock.getDelta();
+                const elapsedTime = this.clock.getElapsedTime();
+                
+                this.updateCraneAssembly();
+                this.updateCraneTransform();
+                this.updateCraneScatter();
+                this.updateCraneRotation();
+                this.updateCraneDissolve();
+                this.updateBackgroundParticles(deltaTime);
+                this.updateBackgroundLayer2(deltaTime);
+                
+                if (this.craneParticles) {
+                    this.craneParticles.material.uniforms.uTime.value = elapsedTime;
+                }
+                
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            new CraneBlueprintApp();
+        });
+    </script>
+</body>
+</html>
